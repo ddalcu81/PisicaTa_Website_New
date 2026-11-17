@@ -1,0 +1,14 @@
+https://192.168.1.100:9443 {
+    bind 192.168.1.100
+    tls internal
+    root * /srv/pisicata/current/public
+    encode zstd gzip
+    header X-Robots-Tag "noindex, nofollow"
+    header X-Content-Type-Options "nosniff"
+
+    @built path /build/assets/*
+    header @built Cache-Control "public, max-age=31536000, immutable"
+
+    php_fastcgi unix//run/php/pisicata.sock
+    file_server
+}
