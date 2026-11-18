@@ -9,6 +9,8 @@ https://192.168.1.100:9443 {
     @built path /build/assets/*
     header @built Cache-Control "public, max-age=31536000, immutable"
 
-    php_fastcgi unix//run/php/pisicata.sock
+    php_fastcgi unix//run/php/pisicata.sock {
+        resolve_root_symlink
+    }
     file_server
 }
