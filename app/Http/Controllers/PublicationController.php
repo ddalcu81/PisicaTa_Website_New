@@ -13,7 +13,7 @@ class PublicationController
 {
     public function home()
     {
-        $latest = Article::published()->with('category')->newest()->limit(7)->get();
+        $latest = Article::published()->with('category')->newest()->limit(6)->get();
 
         return view('public.home', [
             'featured' => $latest->shift(),
