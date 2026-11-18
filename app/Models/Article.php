@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\ArticleCover;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -40,8 +41,20 @@ class Article extends Model
 
     public function cover(): string
     {
-        return $this->image_path
-            ? route('publication.image', ['file' => basename($this->image_path)], absolute: false)
-            : '/media/editorial/cat-'.(($this->id % 4) + 1).'.webp';
+        if ($this->image_path) {
+            return route('publication.image', ['file' => basename($this->image_path)], absolute: false);
+        }
+
+        return $this->sourcedCover()['path'] ?? '/media/editorial/cat-'.(($this->id % 4) + 1).'.webp';
+    }
+
+    public function sourcedCover(): ?array
+    {
+        return $this->image_path ? null : app(ArticleCover::class)->forLegacyId($this->legacy_id);
+    }
+
+    public function coverAlt(): string
+    {
+        return $this->image_alt ?? $this->sourcedCover()['alt'] ?? '';
     }
 }

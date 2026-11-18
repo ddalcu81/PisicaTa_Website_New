@@ -75,7 +75,7 @@ function suggestSlug() {
           <FieldError :message="form.errors.image" />
           <label>Text alternativ<input v-model="form.image_alt" maxlength="255" /></label>
           <FieldError :message="form.errors.image_alt" />
-          <label v-if="article.has_image" class="checkbox"><input v-model="form.remove_image" type="checkbox" /> Folosește coperta generică</label>
+          <label v-if="article.has_image" class="checkbox"><input v-model="form.remove_image" type="checkbox" /> Folosește coperta implicită</label>
         </section>
       </div>
     </form>

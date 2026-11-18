@@ -4,6 +4,7 @@
     $plain = preg_replace('/\s+/u', ' ', html_entity_decode(strip_tags($article->body_html)));
     $description = $article->summary ?: \Illuminate\Support\Str::limit(trim($plain), 155);
     $image = $rootUrl.$article->cover();
+    $cover = $article->sourcedCover();
     $published = $article->published_at->toDateString();
     $parent = $article->category->parent;
     $crumbs = collect([['Acasă', '/'], $parent ? [$parent->name, $parent->publicUrl()] : null,
@@ -36,7 +37,15 @@
                 <time datetime="{{ $published }}">{{ $article->published_at->translatedFormat('j F Y') }}</time>
             </header>
             <figure class="article-cover">
-                <img src="{{ $article->cover() }}" alt="{{ $article->image_alt ?? '' }}" width="740" height="493" fetchpriority="high">
+                <img src="{{ $article->cover() }}" alt="{{ $article->coverAlt() }}"
+                     width="{{ $cover['width'] ?? 740 }}" height="{{ $cover['height'] ?? 493 }}" fetchpriority="high">
+                @if ($cover)
+                    <figcaption>
+                        Foto <a href="{{ $cover['source'] }}" title="{{ $cover['title'] }}">{{ $cover['author'] ?: 'sursa originală' }}</a>
+                        · <a href="{{ $cover['license_url'] }}">{{ $cover['license'] }}</a>
+                        · Redimensionată pentru web
+                    </figcaption>
+                @endif
             </figure>
             <div class="prose">{!! $article->body_html !!}</div>
             @if ($substantial)

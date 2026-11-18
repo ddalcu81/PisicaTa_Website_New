@@ -25,7 +25,7 @@ php artisan serve
 
 Open the displayed URL and sign in at `/admin` with the account created at the prompt. Editors can create and edit articles and categories, change publication status and dates, and upload a cover. A future publication date keeps an article private until that date in Bucharest. Returning a published article to draft removes it from the public site and sitemap.
 
-The importer reads only the article and category rows. It preserves titles, article text, category hierarchy, dates, and slugs, removes invalid NUL characters, and strips inline images, unsafe markup, and unsupported embeds. It keeps the content of existing editorial records across repeated imports. Generated generic covers are used until an editor uploads a replacement. The source archive stays local and is excluded from Git.
+The importer reads only the article and category rows. It preserves titles, article text, category hierarchy, dates, and slugs, removes invalid NUL characters, and strips inline images, unsafe markup, and unsupported embeds. It keeps the content of existing editorial records across repeated imports. Each imported article has a sourced cover with an attribution. An editor can upload a replacement through the admin. New articles use a generic cover until an editor uploads one. The source archive stays local and is excluded from Git.
 
 ## URLs and search
 

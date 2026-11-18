@@ -75,7 +75,7 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; text-wrap: pretty; }
 .card-grid { display: grid; gap: 22px; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: stretch; }
 .article-card { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--white); display: flex; flex-direction: column; }
 .card-image { display: block; aspect-ratio: 1.55; overflow: hidden; background: var(--tint); }
-.card-image img { width: 100%; height: 100%; object-fit: cover; transition: transform 200ms ease; }
+.card-image img { width: 100%; height: 100%; object-fit: cover; object-position: center 40%; transition: transform 200ms ease; }
 .card-image:hover img { transform: scale(1.035); }
 .card-copy { padding: 15px 16px; display: flex; flex-direction: column; flex: 1; align-items: start; }
 .card-copy h3 { font-size: clamp(1.16rem, 1.7vw, 1.45rem); line-height: 1.23; letter-spacing: -.027em; margin: 6px 0 8px; }
@@ -109,8 +109,10 @@ time { font-size: .8rem; color: var(--muted); }
 .reading-grid { display: grid; gap: clamp(2rem, 6vw, 5.5rem); grid-template-columns: minmax(0, 790px) minmax(245px, 300px); align-items: start; margin-top: 2rem; }
 .article-header h1 { margin: .5rem 0 .9rem; }
 .article-deck { font-size: clamp(1.07rem, 2vw, 1.35rem); color: var(--muted); max-width: 63ch; margin-bottom: .8rem; }
-.article-cover { margin: 1.5rem 0 1.8rem; border-radius: 14px; overflow: hidden; background: var(--tint); aspect-ratio: 1.85; }
-.article-cover img { width: 100%; height: 100%; object-fit: cover; }
+.article-cover { margin: 1.5rem 0 1.8rem; }
+.article-cover img { width: 100%; height: auto; aspect-ratio: 1.85; object-fit: cover; object-position: center 40%; border-radius: 14px; background: var(--tint); }
+.article-cover figcaption { margin-top: .4rem; color: var(--muted); font-size: .75rem; overflow-wrap: anywhere; }
+.article-cover figcaption a { text-decoration: underline; text-underline-offset: .15em; }
 .prose { font-size: 1.11rem; line-height: 1.82; overflow-wrap: anywhere; }
 .prose h2, .prose h3, .prose h4 { line-height: 1.25; margin: 1.7em 0 .55em; }
 .prose h2 { font-size: clamp(1.55rem, 3vw, 2.15rem); }
