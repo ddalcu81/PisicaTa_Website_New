@@ -1,0 +1,20 @@
+<?php
+$release=$argv[1];
+require $release.'/vendor/autoload.php';
+$app=require $release.'/bootstrap/app.php';
+$app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+config(['database.connections.mysql.database'=>'pisicata_seo_restore_79a778f']);
+Illuminate\Support\Facades\DB::purge('mysql');
+if(Illuminate\Support\Facades\DB::selectOne('SELECT DATABASE() AS db')->db!=='pisicata_seo_restore_79a778f')throw new RuntimeException('Wrong rehearsal database');
+$before=App\Models\Article::orderBy('id')->get()->map(fn($a)=>$a->getRawOriginal())->all();
+$manifest=json_decode(file_get_contents($release.'/resources/editorial/seo-revisions-2026-11.json'),true,flags:JSON_THROW_ON_ERROR);
+$service=new App\Support\EditorialRevision;
+$dir='/srv/pisicata/shared/storage/app/private/seo-rehearsal-79a778f';
+if(!mkdir($dir,0700))throw new RuntimeException('Rehearsal directory exists');
+if($service->run($manifest)!==164)throw new RuntimeException('Unexpected revision count');
+if($service->run($manifest,$dir.'/rollback.json')!==164)throw new RuntimeException('Apply failed');
+$reverse=json_decode(file_get_contents($dir.'/rollback.json'),true,flags:JSON_THROW_ON_ERROR);
+if($service->run($reverse,$dir.'/redo.json')!==164)throw new RuntimeException('Rollback failed');
+$after=App\Models\Article::orderBy('id')->get()->map(fn($a)=>$a->getRawOriginal())->all();
+if($before!==$after)throw new RuntimeException('Restored article contents differ');
+echo 'MariaDB backup restored: '.count($after).' articles; full batch apply and exact rollback verified.'.PHP_EOL;
