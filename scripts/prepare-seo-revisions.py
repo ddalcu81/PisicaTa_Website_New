@@ -271,6 +271,8 @@ if __name__ == '__main__':
         old=articles[a['legacy_id']]
         changes={key:a[key] for key in ['title','summary','body_html'] if a[key]!=old[key]}
         if changes:
+            if a['legacy_id'] not in guides:
+                changes['updated_at'] = old['updated_at']
             encoded=json.dumps([old[k] for k in ['title','summary','body_html','slug']],ensure_ascii=False,separators=(',',':')).replace('\u2028','\\u2028').replace('\u2029','\\u2029')
             revisions.append(dict(legacy_id=a['legacy_id'],expected_sha256=hashlib.sha256(encoded.encode()).hexdigest(),changes=changes))
     output={'schema':1,'prepared_at':'2026-11-20','baseline_revision':'147822f82c185f9a1e12e543918157aaa3f80d51','articles':revisions}

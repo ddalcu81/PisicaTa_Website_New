@@ -66,6 +66,23 @@ class EditorialRevisionTest extends TestCase
         $this->assertFileDoesNotExist($backup);
     }
 
+    public function test_mechanical_edits_preserve_an_explicit_content_date(): void
+    {
+        $article = $this->article(1)->fresh();
+        $date = $article->getRawOriginal('updated_at');
+        $row = $this->change($article);
+        $row['changes']['updated_at'] = $date;
+        $backup = sys_get_temp_dir().'/pisicata-date-'.bin2hex(random_bytes(8));
+        $this->travel(2)->days();
+        try {
+            $this->assertSame(1, (new EditorialRevision)->run(['schema' => 1, 'articles' => [$row]], $backup));
+            $this->assertSame($date, $article->fresh()->getRawOriginal('updated_at'));
+        } finally {
+            $this->travelBack();
+            @unlink($backup);
+        }
+    }
+
     private function change(Article $article): array
     {
         return ['legacy_id' => $article->legacy_id, 'expected_sha256' => EditorialRevision::fingerprint($article),

@@ -55,6 +55,10 @@ class EditorialRevision
                 $article->forceFill($changes);
                 if (! array_key_exists('updated_at', $changes)) {
                     $article->setUpdatedAt(now());
+                } else {
+                    // Mechanical repairs preserve the previous content date,
+                    // including when the explicit value is already unchanged.
+                    $article->timestamps = false;
                 }
                 // Fingerprint the exact replacement before any database writes.
                 $after = clone $article;
