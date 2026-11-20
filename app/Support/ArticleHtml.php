@@ -30,8 +30,14 @@ class ArticleHtml
         $this->cleanChildren($body);
 
         $xpath = new DOMXPath($document);
-        foreach ($xpath->query('//*[self::p or self::span or self::div or self::a or self::h2 or self::h3 or self::h4 or self::figure][not(normalize-space()) and not(.//hr)]') as $empty) {
-            $empty->parentNode?->removeChild($empty);
+        // XPath normalize-space() misses NBSP and zero-width characters left by
+        // the legacy image galleries. Work inside-out to remove empty wrappers.
+        $candidates = iterator_to_array($xpath->query('//p|//span|//div|//a|//h2|//h3|//h4|//h5|//h6|//figure'));
+        foreach (array_reverse($candidates) as $empty) {
+            if (preg_match('/^[\s\p{Z}\x{200B}\x{FEFF}]*$/u', $empty->textContent)
+                && ! $empty->getElementsByTagName('hr')->length) {
+                $empty->parentNode?->removeChild($empty);
+            }
         }
 
         $result = '';

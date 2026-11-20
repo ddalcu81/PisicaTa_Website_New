@@ -6,6 +6,8 @@
     $image = $rootUrl.$article->cover();
     $cover = $article->sourcedCover();
     $published = $article->published_at->toDateString();
+    $modified = $article->updated_at && $article->updated_at->copy()->startOfDay()->gt($article->published_at)
+        ? $article->updated_at->toIso8601String() : null;
     $parent = $article->category->parent;
     $crumbs = collect([['Acasă', '/'], $parent ? [$parent->name, $parent->publicUrl()] : null,
         [$article->category->name, $article->category->publicUrl()], [$article->title, $article->publicUrl()]])->filter()->values();
@@ -13,6 +15,7 @@
         '@context' => 'https://schema.org',
         '@graph' => [
             ['@type' => 'Article', 'headline' => $article->title, 'description' => $description, 'datePublished' => $published,
+                ...($modified ? ['dateModified' => $modified] : []),
                 'mainEntityOfPage' => $canonical, 'image' => [$image], 'inLanguage' => 'ro',
                 'publisher' => ['@type' => 'Organization', 'name' => 'Pisica Ta', 'url' => $rootUrl.'/']],
             ['@type' => 'BreadcrumbList', 'itemListElement' => $crumbs->map(fn($crumb, $i) =>
@@ -34,7 +37,10 @@
                 <a class="eyebrow" href="{{ $article->category->publicUrl() }}">{{ $article->category->name }}</a>
                 <h1>{{ $article->title }}</h1>
                 @if ($article->summary) <p class="article-deck">{{ $article->summary }}</p> @endif
-                <time datetime="{{ $published }}">{{ $article->published_at->translatedFormat('j F Y') }}</time>
+                <time datetime="{{ $published }}">Publicat: {{ $article->published_at->translatedFormat('j F Y') }}</time>
+                @if ($modified)
+                    · <time datetime="{{ $modified }}">Actualizat: {{ $article->updated_at->translatedFormat('j F Y') }}</time>
+                @endif
             </header>
             <figure class="article-cover">
                 <img src="{{ $article->cover() }}" alt="{{ $article->coverAlt() }}"

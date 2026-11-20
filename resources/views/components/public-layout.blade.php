@@ -23,6 +23,8 @@
     <link rel="canonical" href="{{ $canonical }}">
     @if (! config('pisicata.indexable') || ($noIndex ?? false))
         <meta name="robots" content="noindex, follow">
+    @else
+        <meta name="robots" content="index, follow, max-image-preview:large">
     @endif
     <meta property="og:site_name" content="Pisica Ta">
     <meta property="og:locale" content="ro_RO">

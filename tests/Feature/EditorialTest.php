@@ -49,6 +49,20 @@ class EditorialTest extends TestCase
         $this->get('/robots.txt')->assertSee('Disallow: /');
     }
 
+    public function test_update_dates_describe_actual_edits_and_large_previews_keep_staging_private(): void
+    {
+        $article = $this->article();
+        $article->forceFill(['updated_at' => $article->published_at])->saveOrFail();
+        $this->get($article->publicUrl())->assertOk()->assertDontSee('dateModified')->assertDontSee('Actualizat:');
+
+        $article->update(['body_html' => '<p>Conținut revizuit.</p>']);
+        $this->get($article->publicUrl())->assertOk()->assertSee('dateModified')->assertSee('Actualizat:')
+            ->assertSee('name="robots" content="noindex, follow"', false)->assertDontSee('content="index, follow,');
+
+        config(['pisicata.indexable' => true]);
+        $this->get($article->publicUrl())->assertSee('content="index, follow, max-image-preview:large"', false);
+    }
+
     public function test_admin_can_publish_and_attach_an_image(): void
     {
         $category = Category::create(['name' => 'Sfaturi', 'slug' => 'sfaturi']);

@@ -43,3 +43,17 @@ php vendor/bin/phpunit
 ```
 
 Tests use a disposable SQLite database. For the isolated Pi target and rollback steps, see [Pi staging](docs/pi-staging.md).
+
+## Reviewed editorial repairs
+
+The November SEO repairs are separate from the legacy import, which continues to preserve existing editor changes. `resources/editorial/seo-revisions-2026-11.json` contains the reviewed replacement fields and a fingerprint of each original article. Existing slugs, publication dates, covers, categories and publication states are preserved. The preparation script takes a current editorial-only export and produces this manifest; it does not connect to a database.
+
+Preview against the intended database first:
+
+```sh
+php artisan editorial:revise resources/editorial/seo-revisions-2026-11.json
+```
+
+Apply with `--apply --backup=/absolute/private/new-rollback.json`. The command checks every affected article before writing, locks the rows in a transaction, and refuses the entire batch if text has changed since review. The backup must be a new file outside `public`; it contains original editorial text and timestamps and can be supplied to the same command to restore them, with a fresh backup path. Repeating an already applied manifest does nothing. Retain rollback files in private persistent storage, outside release directories. Rollback manifests are trusted operator inputs and restore the exact old markup, including legacy whitespace.
+
+Article pages show the original publication date and an update date when the stored edit date falls on a later day. An update is not a claim of veterinary review. Proposed rewrites of the three urgent health/handling articles are in [the veterinary review draft](docs/editorial-drafts/medical-review.html); these have not replaced the published text.
